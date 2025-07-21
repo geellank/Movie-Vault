@@ -195,7 +195,7 @@ export default function MoviePage({ params }) {
       {showAddToCollectionModal && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
           <div className="bg-gray-800 p-8 rounded-lg shadow-xl max-w-md w-full border border-gray-700">
-            <h3 className="text-2xl font-bold mb-4 text-white">Add "{movie.title || movie.name}" to Collection</h3>
+            <h3 className="text-2xl font-bold mb-4 text-white">Add &quot;{movie.title || movie.name}&quot; to Collection</h3>
             {collections.length === 0 ? (
               <p className="text-gray-400 mb-4">You have no collections yet. Create a new one!</p>
             ) : (
