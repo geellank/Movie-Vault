@@ -1,4 +1,5 @@
 // src/app/auth/login/page.tsx
+
 'use client';
 
 import { useState } from 'react';
@@ -10,13 +11,8 @@ export default function LoginPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Ini adalah placeholder. Di masa depan, di sinilah Anda akan
-    // memanggil fungsi login Firebase Anda.
     alert('Login attempted with: ' + email + ' and ' + password);
     console.log('Login attempt:', { email, password });
-    // Untuk saat ini, tidak ada logika login sebenarnya.
-    // Anda bisa mengarahkan pengguna kembali ke home setelah "percobaan"
-    // login jika diinginkan, misalnya: router.push('/');
   };
 
   return (
@@ -71,15 +67,22 @@ export default function LoginPage() {
         </form>
         <div className="mt-6 text-center text-sm">
           <p className="text-gray-400">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '} {/* BARIS 74: UBAH ' menjadi &apos; */}
             <Link
-              href="/auth/signup" // Asumsi Anda juga akan membuat halaman signup
+              href="/auth/signup"
               className="font-medium text-amber-500 hover:text-amber-400"
             >
               Sign up
             </Link>
           </p>
         </div>
+        {/* BARIS 198: Anda tidak memiliki 198 baris di sini dalam kode yang Anda berikan,
+            tapi jika ada string dengan " atau ' dalam JSX, terapkan hal yang sama.
+            Misalnya, jika ada seperti ini:
+            <p>Ini adalah "sebuah contoh".</p>
+            Ubah menjadi:
+            <p>Ini adalah &quot;sebuah contoh&quot;.</p>
+        */}
         <div className="mt-4 text-center text-sm">
           <Link
             href="/"

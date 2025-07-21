@@ -4,8 +4,12 @@
               // allowing the use of hooks like useState and useEffect.
 
 import { useState, useEffect } from 'react'; // For managing client-side state
-import Link from 'next/link';                 // For navigation
-import { Collection, Movie } from '@/types';  // Your custom interfaces for type safety
+import Link from 'next/link';                // For navigation
+// Jika Anda menggunakan JavaScript (.js) dan bukan TypeScript (.ts/.tsx),
+// Anda mungkin perlu menghapus ": Collection[]" dan ": Movie[]"
+// atau menyediakan deklarasi tipe di JSDoc jika Anda ingin Type Checking.
+// Untuk saat ini, saya akan menghapus tipe di state untuk kompatibilitas JS.
+// import { Collection, Movie } from '@/types'; // Baris ini mungkin menyebabkan error jika Anda tidak memiliki deklarasi tipe yang tepat untuk JS
 
 // Your existing import for displaying movie results
 import Results from '@/components/Results';
@@ -18,11 +22,11 @@ const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 export default function Home({ searchParams }) {
   // --- State for Collections (NEW) ---
   // Manages the list of movie collections created by the user
-  const [collections, setCollections] = useState<Collection[]>([]);
+  const [collections, setCollections] = useState([]); // Menghapus Collection[]
 
   // --- State for Movie Results (EXISTING - now managed client-side) ---
   // Manages the movies fetched from TMDB, along with loading/error states
-  const [movieResults, setMovieResults] = useState<Movie[]>([]);
+  const [movieResults, setMovieResults] = useState([]); // Menghapus Movie[]
   const [loadingMovies, setLoadingMovies] = useState(true);
   const [errorMovies, setErrorMovies] = useState(null);
 
@@ -42,7 +46,7 @@ export default function Home({ searchParams }) {
   // This runs when the component mounts and re-runs if `searchParams.genre` changes.
   useEffect(() => {
     async function fetchMovies() {
-      setLoadingMovies(true);  // Set loading state to true before fetching
+      setLoadingMovies(true);   // Set loading state to true before fetching
       setErrorMovies(null);     // Clear any previous errors
 
       try {
@@ -51,20 +55,16 @@ export default function Home({ searchParams }) {
           `https://api.themoviedb.org/3${
             genre === 'fetchTopRated' ? `/movie/top_rated` : `/trending/all/week`
           }?api_key=${API_KEY}&language=en-US&page=1`
-          // Note: `next: { revalidate: 10000 }` is primarily for Server Components.
-          // For client-side fetch, caching is handled by the browser's default mechanisms.
         );
 
         if (!res.ok) {
-          // If response is not OK (e.g., 401, 404, 500), throw an error
           const errorData = await res.json();
           throw new Error(errorData.status_message || 'Failed to fetch movie data');
         }
 
         const data = await res.json(); // Parse the JSON response
-        setMovieResults(data.results);  // Update state with fetched movie results
+        setMovieResults(data.results);   // Update state with fetched movie results
       } catch (error) {
-        // Catch any errors during the fetch operation
         console.error('Error fetching movie data:', error);
         setErrorMovies(error.message); // Set error state
       } finally {
@@ -83,7 +83,7 @@ export default function Home({ searchParams }) {
         {collections.length === 0 ? (
           // Display message if no collections exist
           <p className="text-gray-400">
-            You haven't created any collections yet.{' '}
+            You haven&apos;t created any collections yet.{' '} {/* BARIS INI DIPERBAIKI */}
             <Link href="/collections" className="text-blue-400 hover:underline">
               Create one!
             </Link>
