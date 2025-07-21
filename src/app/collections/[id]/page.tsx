@@ -1,37 +1,32 @@
-// src/app/collections/[id]/page.tsx
-
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Collection, Movie } from '@/types'; // Import your types
-import { useRouter } from 'next/navigation'; // Import useRouter for programmatic navigation
+import { Collection, Movie } from '@/types';
+import { useRouter } from 'next/navigation';
 
-// Interface for the props received by this dynamic page
 interface CollectionPageProps {
   params: {
-    id: string; // The dynamic collection ID from the URL
+    id: string;
   };
 }
 
 export default function CollectionPage({ params }: CollectionPageProps) {
-  const collectionId = params.id; // Get the dynamic ID from the URL
+  const collectionId = params.id;
   const [collection, setCollection] = useState<Collection | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter(); // Initialize useRouter
+  const router = useRouter();
 
-  // --- Fungsi untuk memuat koleksi dari LocalStorage ---
-  const loadCollectionFromLocalStorage = () => {
+  // ✅ Perbaikan: useCallback agar bisa masuk dependency useEffect
+  const loadCollectionFromLocalStorage = useCallback(() => {
     if (typeof window !== 'undefined' && collectionId) {
       try {
         const savedCollections = localStorage.getItem('myMovieCollections');
         if (savedCollections) {
           const collections: Collection[] = JSON.parse(savedCollections);
-          const foundCollection = collections.find(
-            (col) => col.id === collectionId
-          );
+          const foundCollection = collections.find(col => col.id === collectionId);
           if (foundCollection) {
             setCollection(foundCollection);
           } else {
@@ -47,31 +42,24 @@ export default function CollectionPage({ params }: CollectionPageProps) {
         setLoading(false);
       }
     }
-  };
+  }, [collectionId]);
 
   useEffect(() => {
     loadCollectionFromLocalStorage();
-  }, [collectionId]); // Re-run effect if collectionId changes
+  }, [loadCollectionFromLocalStorage]);
 
-  // --- Fungsi untuk menghapus film dari koleksi ---
   const handleRemoveMovie = (movieIdToRemove: number) => {
     if (!collection) return;
 
-    // Filter film yang akan dihapus
-    const updatedMovies = collection.movies.filter(
-      (movie) => movie.id !== movieIdToRemove
-    );
-
-    // Buat objek koleksi yang diperbarui
+    const updatedMovies = collection.movies.filter(movie => movie.id !== movieIdToRemove);
     const updatedCollection = { ...collection, movies: updatedMovies };
-    setCollection(updatedCollection); // Perbarui state lokal
+    setCollection(updatedCollection);
 
-    // Perbarui localStorage
     if (typeof window !== 'undefined') {
       const savedCollections: Collection[] = JSON.parse(
         localStorage.getItem('myMovieCollections') || '[]'
       );
-      const newCollections = savedCollections.map((col) =>
+      const newCollections = savedCollections.map(col =>
         col.id === collectionId ? updatedCollection : col
       );
       localStorage.setItem('myMovieCollections', JSON.stringify(newCollections));
@@ -80,7 +68,6 @@ export default function CollectionPage({ params }: CollectionPageProps) {
     alert('Movie removed from collection!');
   };
 
-  // --- Fungsi untuk menghapus seluruh koleksi (BARU) ---
   const handleDeleteCollection = () => {
     if (!collection) return;
 
@@ -95,22 +82,17 @@ export default function CollectionPage({ params }: CollectionPageProps) {
             localStorage.getItem('myMovieCollections') || '[]'
           );
 
-          // Filter koleksi yang akan dihapus
-          const newCollections = savedCollections.filter(
-            (col) => col.id !== collectionId
-          );
-
+          const newCollections = savedCollections.filter(col => col.id !== collectionId);
           localStorage.setItem('myMovieCollections', JSON.stringify(newCollections));
           alert(`Collection "${collection.title}" deleted successfully!`);
-          router.push('/'); // Redirect ke halaman utama setelah menghapus
+          router.push('/');
         } catch (e) {
-          console.error("Error deleting collection:", e);
-          alert("Failed to delete collection. Please try again.");
+          console.error('Error deleting collection:', e);
+          alert('Failed to delete collection. Please try again.');
         }
       }
     }
   };
-
 
   if (loading) {
     return (
@@ -131,10 +113,7 @@ export default function CollectionPage({ params }: CollectionPageProps) {
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-4xl font-bold text-white">
-          {collection.title}
-        </h1>
-        {/* Tombol Hapus Koleksi (BARU) */}
+        <h1 className="text-4xl font-bold text-white">{collection.title}</h1>
         <button
           onClick={handleDeleteCollection}
           className="bg-red-700 hover:bg-red-800 text-white font-bold py-2 px-4 rounded transition-colors duration-200"
@@ -153,7 +132,7 @@ export default function CollectionPage({ params }: CollectionPageProps) {
         </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-          {collection.movies.map((movie) => (
+          {collection.movies.map(movie => (
             <div
               key={movie.id}
               className="bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-transform transform hover:scale-105 duration-200"
@@ -178,14 +157,11 @@ export default function CollectionPage({ params }: CollectionPageProps) {
                   </h3>
                   <p className="text-gray-400 text-sm">
                     {movie.release_date || movie.first_air_date
-                      ? `Released: ${
-                          movie.release_date || movie.first_air_date
-                        }`
+                      ? `Released: ${movie.release_date || movie.first_air_date}`
                       : 'Date N/A'}
                   </p>
                 </div>
               </Link>
-              {/* Tombol Hapus Film */}
               <button
                 onClick={() => handleRemoveMovie(movie.id)}
                 className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 mt-2 transition-colors duration-200"
