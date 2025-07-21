@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    // Other common options for Next.js JavaScript projects:
+    "jsx": "preserve", // Keep JSX as is for Next.js
+    "allowJs": true,   // Allow JavaScript files
+    "noEmit": true,    // Do not emit output files
+    "esModuleInterop": true, // Enable compatibility for default imports
+    "moduleResolution": "node", // Or "node", depending on Next.js version/setup
+    "resolveJsonModule": true, // Allow importing .json files
+    "isolatedModules": true, // Each file is a separate module
+    "strict": false, // You might start with 'false' and gradually enable 'true' for stricter checks
+    "skipLibCheck": true, // Skip type checking of all declaration files (*.d.ts)
+    "forceConsistentCasingInFileNames": true // Ensure consistent casing for imports
+  },
+  "include": ["next-env.d.ts", "**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"], // Include all relevant file types
+  "exclude": ["node_modules"] // Exclude node_modules from compilation
+}
